@@ -1,70 +1,123 @@
-# Getting Started with Create React App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Blood Metrics Dashboard
 
-## Available Scripts
+Overview
+The Blood Metrics Dashboard is a single-page React application developed to help healthcare providers quickly identify patients with concerning blood work values. This dashboard displays patient metrics in a color-coded table format, highlights any metrics falling outside normal ranges, and provides a summary of at-risk metrics. Additionally, the app integrates an Ollama LLM model via FastAPI to analyze data and deliver insightful summaries of each patient’s health status.
 
-In the project directory, you can run:
+Features
+1. Data Table: Displays patient blood metrics in a tabular format.
+2. Risk Level Highlighting: Blood values are highlighted based on severity levels:
+   - Normal: No highlight
+   - Borderline: Yellow highlight
+   - High Risk: Red highlight
+3. Risk Summary: Provides a quick summary of at-risk metrics for each patient.
+4. LLM Insights: Uses Ollama LLM (accessed via FastAPI) to analyze and provide insights into each patient's health based on their metrics, highlighting which patients are at higher risk.
 
-### `npm start`
+## Risk Thresholds
+The risk thresholds for each metric are as follows:
+| Metric         | Borderline            | High Risk                 |
+|----------------|-----------------------|----------------------------|
+|   A1C          | ≥ 5.7%                | ≥ 6.5%                    |
+|   LDL          | ≥ 130 mg/dL           | ≥ 160 mg/dL               |
+|   Vitamin D    | ≤ 30 ng/mL            | < 20 ng/mL                |
+|   Blood Pressure | ≥ 130/80 mmHg     | ≥ 140/90 mmHg             |
+|   Glucose      | ≥ 100 mg/dL           | ≥ 126 mg/dL               |
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Installation and Setup
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+To set up and run the application locally, follow these steps:
 
-### `npm test`
+### Prerequisites
+- Ensure you have Node.js (v14 or higher) installed.
+- Clone this repository to your local machine.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Setup Instructions
+1. Install Dependencies:
+   ```bash
+   npm install
+   ```
 
-### `npm run build`
+2. Start the Application:
+   ```bash
+   npm start
+   ```
+   This command starts the application in development mode. Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+3. FastAPI Setup for LLM Integration:
+   - Make sure the Ollama LLM is running.
+   - Start the FastAPI server to handle data insights with Ollama.
+   - Configure any necessary environment variables or endpoint URLs in `utils` for LLM communication.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Directory Structure
+- `public/`: Contains static files and icons.
+- `src/`: The source code for the application.
+  - `components/`: Reusable components for the dashboard.
+    - `DataTable.js`: Component displaying the data table with risk highlights.
+    - `RiskSummary.js`: Component summarizing at-risk metrics.
+    - `LLMInsight.js`: Component that generates insights by analyzing data through Ollama LLM.
+  - `data/`: Stores sample data (`sampleData.json`) used to populate the dashboard.
+  - `utils/`: Contains helper functions for LLM requests and risk analysis.
+  - `App.js`: Main application component, assembling all parts of the dashboard.
+  - `index.js`: Entry point for the React application.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Sample Data
+The application uses sample data stored in `data/sampleData.json`, structured as shown below:
+```json
+[
+  {
+    "id": "001",
+    "date": "2023-07-01",
+    "a1c": 5.6,
+    "ldl": 120,
+    "vitaminD": 18,
+    "bloodPressure": "120/80",
+    "glucose": 98
+  },
+  {
+    "id": "002",
+    "date": "2023-06-15",
+    "a1c": 6.1,
+    "ldl": 145,
+    "vitaminD": 25,
+    "bloodPressure": "130/85",
+    "glucose": 110
+  }
+]
+```
 
-### `npm run eject`
+## Assumptions
+- Blood Metrics Interpretation: Thresholds and interpretation criteria are based on standard ranges.
+- Ollama LLM Usage: Assumes LLM provides a summary of patient health based on JSON data input.
+- UI Library: TailwindCSS was used to style components for consistency and responsiveness.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## Implementation Notes
+1. Table and Highlighting Logic:
+   - Each row represents a patient's data, with conditional formatting based on the predefined risk thresholds.
+2. LLM Integration:
+   - FastAPI serves as the middleware, facilitating data analysis and insight generation.
+   - The `LLMInsight.js` component submits patient data to Ollama for interpretation, providing healthcare insights.
+3. User Experience:
+   - The application uses color-coded highlights to quickly convey risk levels.
+   - Borderline and high-risk metrics are clearly differentiated to streamline review.
+4. Error Handling:
+   - Includes basic error handling for LLM API calls to ensure consistent user experience.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Usage
+Upon launching the application:
+1. View the patient data in a color-coded table format.
+2. Review the risk summary for each patient.
+3. Access detailed insights via the LLM component for a more nuanced health overview.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Future Improvements
+- Dynamic Data: Implement data fetching from an external API or database.
+- Interactive Filtering: Add options to filter by specific metrics or risk levels.
+- Enhanced Error Handling: Implement more robust error handling for API and LLM integration.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## AI Prompt Engineering
+The prompts for LLM were crafted to succinctly convey each patient’s health status based on data trends. Prompts include conditions and questions that enable the LLM to interpret and rank patient risk effectively. All prompt-engineering inputs and outputs are documented for transparency and reproducibility.
 
-## Learn More
+## Screenshots
+_Add screenshots here if available._
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## License
+This project is open-source under the MIT License. See `LICENSE` for details.
